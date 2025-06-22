@@ -1,23 +1,26 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from typing import Dict, Any
 import jwt
 import datetime
 import os
 
 from ..database.crud import autenticar_usuario, usuario_para_dict, obter_usuario
-from ..middleware.auth import jwt_required, get_current_user
+from ..middleware.auth import jwt_required, get_current_user, invalidate_token
 
 auth_bp = Blueprint('auth', __name__)
 
 def generate_tokens(usuario):
     """Gera tokens de acesso e refresh para o usuário"""
-    secret_key = os.getenv('JWT_SECRET_KEY', 'fallback-secret-key')
+    secret_key = current_app.config.get('SECRET_KEY', os.getenv('SECRET_KEY', 'fallback-secret-key'))
     
     # Token de acesso (1 hora)
     access_payload = {
-        'user_id': usuario.id,
+        'user_cpf': usuario.cpf,
         'email': usuario.email,
-        'tipo_usuario': usuario.tipo_usuario.value,
+        'tipo_usuario': usuario.tipo_usuario,
+        'flag_gestor': usuario.flag_gestor,
+        'grupo_id': usuario.grupo_id,
+        'uf': usuario.UF,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),
         'iat': datetime.datetime.utcnow(),
         'type': 'access'
@@ -25,7 +28,7 @@ def generate_tokens(usuario):
     
     # Token de refresh (7 dias)
     refresh_payload = {
-        'user_id': usuario.id,
+        'user_cpf': usuario.cpf,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
         'iat': datetime.datetime.utcnow(),
         'type': 'refresh'
@@ -75,14 +78,14 @@ def refresh():
         return jsonify({"erro": "Refresh token necessário"}), 400
     
     try:
-        secret_key = os.getenv('JWT_SECRET_KEY', 'fallback-secret-key')
+        secret_key = current_app.config.get('SECRET_KEY', os.getenv('SECRET_KEY', 'fallback-secret-key'))
         payload = jwt.decode(refresh_token, secret_key, algorithms=['HS256'])
         
         if payload.get('type') != 'refresh':
             return jsonify({"erro": "Token inválido"}), 401
         
         # Buscar usuário
-        usuario = obter_usuario(payload['user_id'])
+        usuario = obter_usuario(payload['user_cpf'])
         if not usuario:
             return jsonify({"erro": "Usuário não encontrado"}), 404
         
@@ -106,7 +109,8 @@ def refresh():
 @jwt_required
 def logout():
     """Logout (invalidar token)"""
-    # Em uma implementação real, você adicionaria o token a uma blacklist
+    token = request.headers.get('Authorization')
+    invalidate_token(token)
     return jsonify({"message": "Logout realizado com sucesso"}), 200
 
 @auth_bp.route('/me', methods=['GET'])

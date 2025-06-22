@@ -3,14 +3,12 @@ from typing import Dict, Any
 
 from ..database.crud import (
     criar_grupo, listar_grupos, obter_grupo, 
-    atualizar_grupo, deletar_grupo, grupo_para_dict,
-    estatisticas_grupo
+    atualizar_grupo, deletar_grupo, grupo_para_dict
 )
 from ..middleware.auth import (
     jwt_required, requer_permissao_grupo, filtrar_por_escopo_usuario,
-    extrair_usuario_id_do_token, verificar_permissao_empresa
+    extrair_usuario_cpf_do_token
 )
-from ..database.models import TipoUsuario
 
 grupos_bp = Blueprint('grupos', __name__)
 
@@ -19,18 +17,18 @@ grupos_bp = Blueprint('grupos', __name__)
 def listar():
     """Lista grupos com base no escopo do usuário"""
     try:
-        usuario_id = extrair_usuario_id_do_token()
-        if not usuario_id:
+        usuario_cpf = extrair_usuario_cpf_do_token()
+        if not usuario_cpf:
             return jsonify({"erro": "Token de autenticação necessário"}), 401
         
         ativos_apenas = request.args.get('ativos', 'true').lower() == 'true'
         
         # Aplica filtros baseados no escopo do usuário
-        filtros = filtrar_por_escopo_usuario(usuario_id)
+        filtros = filtrar_por_escopo_usuario(usuario_cpf)
         
-        if filtros and 'empresa_id' in filtros:
+        if filtros and 'cnpj_empresa' in filtros:
             # RH vê grupos da sua empresa
-            grupos = listar_grupos(empresa_id=filtros['empresa_id'], ativos_apenas=ativos_apenas)
+            grupos = listar_grupos(cnpj_empresa=filtros['cnpj_empresa'], ativos_apenas=ativos_apenas)
         elif filtros and 'grupo_id' in filtros:
             # Gestores e usuários comuns veem apenas seu grupo
             grupo_id = filtros['grupo_id']
@@ -66,24 +64,46 @@ def criar():
     dados: Dict[str, Any] = request.get_json(force=True)
     
     try:
-        usuario_id = extrair_usuario_id_do_token()
-        if not usuario_id:
+        # Validar dados de entrada
+        from ..validation.input_validator import validar_grupo_input
+        erros = validar_grupo_input(dados)
+        if erros:
+            return jsonify({"erro": erros[0]}), 400
+            
+        usuario_cpf = extrair_usuario_cpf_do_token()
+        if not usuario_cpf:
             return jsonify({"erro": "Token de autenticação necessário"}), 401
-        
-        # Verifica se o usuário pode criar grupos na empresa especificada
-        empresa_id = dados["empresa_id"]
-        if not verificar_permissao_empresa(usuario_id, empresa_id):
-            return jsonify({"erro": "Sem permissão para criar grupos nesta empresa"}), 403
         
         # Apenas RH pode criar grupos
         from ..database.crud import obter_usuario
-        usuario = obter_usuario(usuario_id)
-        if not usuario or usuario.tipo_usuario != TipoUsuario.RH:
+        usuario = obter_usuario(usuario_cpf)
+        if not usuario or usuario.tipo_usuario != 'rh':
             return jsonify({"erro": "Apenas RH pode criar grupos"}), 403
+        
+        # Verifica se o usuário pode criar grupos na empresa especificada
+        cnpj_empresa = dados.get("cnpj_empresa")
+        if not cnpj_empresa or len(str(cnpj_empresa)) != 14:
+            return jsonify({"erro": "CNPJ inválido"}), 400
+
+        # Validação de campos obrigatórios
+        nome = dados.get("nome")
+        if not nome or not nome.strip():
+            return jsonify({"erro": "Nome do grupo é obrigatório"}), 400
+            
+        if not dados.get("telefone"):
+            return jsonify({"erro": "Telefone é obrigatório"}), 400
+
+        # RH pode criar grupos apenas na sua própria empresa
+        if usuario.grupo_id:
+            from ..database.crud import obter_grupo
+            grupo_rh = obter_grupo(usuario.grupo_id)
+            if not grupo_rh or grupo_rh.cnpj_empresa != cnpj_empresa:
+                return jsonify({"erro": "RH só pode criar grupos na sua própria empresa"}), 403
         
         grupo = criar_grupo(
             nome=dados["nome"],
-            empresa_id=empresa_id,
+            cnpj_empresa=cnpj_empresa,
+            telefone=dados["telefone"],
             descricao=dados.get("descricao")
         )
         return jsonify(grupo_para_dict(grupo)), 201
@@ -100,13 +120,13 @@ def atualizar(grupo_id: int):
     dados: Dict[str, Any] = request.get_json(force=True)
     
     try:
-        usuario_id = extrair_usuario_id_do_token()
-        if not usuario_id:
+        usuario_cpf = extrair_usuario_cpf_do_token()
+        if not usuario_cpf:
             return jsonify({"erro": "Token de autenticação necessário"}), 401
             
         from ..database.crud import obter_usuario
-        usuario = obter_usuario(usuario_id)
-        if not usuario or usuario.tipo_usuario != TipoUsuario.RH:
+        usuario = obter_usuario(usuario_cpf)
+        if not usuario or usuario.tipo_usuario != 'rh':
             return jsonify({"erro": "Apenas RH pode atualizar grupos"}), 403
         
         sucesso = atualizar_grupo(grupo_id, **dados)
@@ -122,31 +142,18 @@ def atualizar(grupo_id: int):
 def deletar(grupo_id: int):
     """Desativa um grupo"""
     try:
-        usuario_id = extrair_usuario_id_do_token()
-        if not usuario_id:
+        usuario_cpf = extrair_usuario_cpf_do_token()
+        if not usuario_cpf:
             return jsonify({"erro": "Token de autenticação necessário"}), 401
             
         from ..database.crud import obter_usuario
-        usuario = obter_usuario(usuario_id)
-        if not usuario or usuario.tipo_usuario != TipoUsuario.RH:
+        usuario = obter_usuario(usuario_cpf)
+        if not usuario or usuario.tipo_usuario != 'rh':
             return jsonify({"erro": "Apenas RH pode desativar grupos"}), 403
         
         sucesso = deletar_grupo(grupo_id)
         if not sucesso:
             return jsonify({"erro": "Grupo não encontrado"}), 404
         return jsonify({"status": "Grupo desativado"}), 200
-    except Exception as e:
-        return jsonify({"erro": str(e)}), 500
-
-@grupos_bp.route('/<int:grupo_id>/estatisticas', methods=['GET'])
-@jwt_required
-@requer_permissao_grupo
-def obter_estatisticas(grupo_id: int):
-    """Obtém estatísticas de um grupo"""
-    try:
-        stats = estatisticas_grupo(grupo_id)
-        if not stats:
-            return jsonify({"erro": "Grupo não encontrado"}), 404
-        return jsonify(stats), 200
     except Exception as e:
         return jsonify({"erro": str(e)}), 500

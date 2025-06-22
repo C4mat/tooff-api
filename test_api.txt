@@ -1,585 +1,1020 @@
-🔐 Testando API Flask com JWT completo...
+[1m🎯 Iniciando testes da API Flask...[0m
+[33m⚙️ Modo debug: ATIVADO[0m
+[33m🔧 Para desativar debug, mude debugMode para false[0m
 
-📋 TESTANDO AUTENTICAÇÃO JWT
+[1m🚀 TESTE COMPLETO DA API - VERSÃO 4.0[0m
+[34m📅 19/06/2025, 21:23:11[0m
+[34m🔗 Base URL: http://localhost:5000/api[0m
 
-=== Login RH ===
-Status: 200
-✅ SUCESSO
-Response: { access_token: '***', refresh_token: '***', usuario: {...} }
-🔑 Token RH capturado com sucesso!
+[1m🔍 VERIFICANDO SERVIDOR[0m
+[32m✅ Servidor Flask rodando[0m
+[32m✅ Versão: 2.0[0m
+[32m✅ Database: MySQL[0m
 
-=== Login Gestor ===
-Status: 200
-✅ SUCESSO
-Response: { access_token: '***', refresh_token: '***', usuario: {...} }
-🔑 Token Gestor capturado com sucesso!
+[1m🔐 SEÇÃO 1: AUTENTICAÇÃO[0m
+[34m📤 Dados enviados: {
+  "email": "maria.rh@techsolutions.com",
+  "senha": "123456"
+}[0m
+[36m🌐 POST http://localhost:5000/api/auth/login[0m
 
-📋 TESTANDO COM TOKEN RH (Acesso Total)
+[36m=== Login RH ===[0m
+✅ Status: [32m200[0m
+[33m✅ Token recebido: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...[0m
+[33m👤 Usuário: Maria Silva (maria.rh@techsolutions.com)[0m
+[32m🔑 Token rh salvo com sucesso[0m
+[34m📤 Dados enviados: {
+  "email": "joao.gestor@techsolutions.com",
+  "senha": "123456"
+}[0m
+[36m🌐 POST http://localhost:5000/api/auth/login[0m
 
-=== Endpoint /me (RH) ===
-Status: 200
-✅ SUCESSO
-Response: {
+[36m=== Login Gestor ===[0m
+✅ Status: [32m200[0m
+[33m✅ Token recebido: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...[0m
+[33m👤 Usuário: João Santos (joao.gestor@techsolutions.com)[0m
+[32m🔑 Token gestor salvo com sucesso[0m
+[34m📤 Dados enviados: {
+  "email": "ana.dev@techsolutions.com",
+  "senha": "123456"
+}[0m
+[36m🌐 POST http://localhost:5000/api/auth/login[0m
+
+[36m=== Login Usuário Comum ===[0m
+✅ Status: [32m200[0m
+[33m✅ Token recebido: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...[0m
+[33m👤 Usuário: Ana Costa (ana.dev@techsolutions.com)[0m
+[32m🔑 Token comum salvo com sucesso[0m
+[34m📤 Dados enviados: {
+  "email": "inexistente@test.com",
+  "senha": "senha_errada"
+}[0m
+[36m🌐 POST http://localhost:5000/api/auth/login[0m
+
+[36m=== Login Inválido (deve falhar) ===[0m
+✅ Status: [32m401[0m
+[33m📄 Response: {
+  "autenticado": false,
+  "erro": "Credenciais inválidas"
+}[0m
+[34m📤 Dados enviados: {
+  "email": "maria.rh@techsolutions.com",
+  "senha": "senha_errada"
+}[0m
+[36m🌐 POST http://localhost:5000/api/auth/login[0m
+
+[36m=== Login com Senha Incorreta (deve falhar) ===[0m
+✅ Status: [32m401[0m
+[33m📄 Response: {
+  "autenticado": false,
+  "erro": "Credenciais inválidas"
+}[0m
+
+[33m🧪 Testando endpoint /me com token RH...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/auth/me[0m
+
+[36m=== Endpoint /me ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
   "usuario": {
+    "UF": "SP",
     "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.073185",
+    "cpf": 12345678901,
+    "criado_em": "2025-06-04T23:12:14",
     "email": "maria.rh@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 1,
+    "flag_gestor": "N",
+    "grupo_id": 2,
     "grupo_nome": "Recursos Humanos",
-    "id": 1,
     "inicio_na_empresa": "2020-01-15",
-    "nome": "Maria Silva",
-    "tipo_usuario": "rh"
-  }
-}
+    "nome": "Maria Si...[0m
 
-=== Listar Empresas (RH) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "ativa": true,
-    "cnpj": "12.345.678/0001-90",
-    "criado_em": "2025-05-28T05:38:35.899753",
-    "email": "contato@techsolutions.com",
-    "endereco": "Rua das Flores, 123 - São Paulo/SP",
-    "id": 1,
-    "nome": "Tech Solutions LTDA",
-    "telefone": "(11) 1234-5678",
-    "total_grupos": 3
-  }
-]
+[1m🌍 SEÇÃO 2: ENDPOINTS PÚBLICOS[0m
+[36m🌐 GET http://localhost:5000/api/ufs[0m
 
-=== Listar Grupos (RH) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:35.916568",
-    "descricao": "Equipe de recursos humanos",
-    "empresa_id": 1,
-    "empresa_nome": "Tech Solutions LTDA",
-    "id": 1,
-    "nome": "Recursos Humanos",
-    "total_usuarios": 1
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:35.932335",
-    "descricao": "Equipe de desenvolvimento de software",
-    "empresa_id": 1,
-    "empresa_nome": "Tech Solutions LTDA",
-    "id": 2,
-    "nome": "Desenvolvimento",
-    "total_usuarios": 3
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:35.945253",
-    "descricao": "Equipe de marketing e vendas",
-    "empresa_id": 1,
-    "empresa_nome": "Tech Solutions LTDA",
-    "id": 3,
-    "nome": "Marketing",
-    "total_usuarios": 1
-  }
-]
+[36m=== Listar UFs (público) ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 27 itens[0m
+[33m📄 Primeiro item: {
+  "cod_uf": 12,
+  "uf": "AC"
+}...[0m
+[36m🌐 GET http://localhost:5000/api/tipos-ausencia[0m
 
-=== Listar Usuários (RH) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.073185",
-    "email": "maria.rh@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 1,
-    "grupo_nome": "Recursos Humanos",
-    "id": 1,
-    "inicio_na_empresa": "2020-01-15",
-    "nome": "Maria Silva",
-    "tipo_usuario": "rh"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.198239",
-    "email": "joao.gestor@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 2,
-    "inicio_na_empresa": "2021-03-10",
-    "nome": "João Santos",
-    "tipo_usuario": "gestor"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.319890",
-    "email": "ana.dev@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 3,
-    "inicio_na_empresa": "2022-06-01",
-    "nome": "Ana Costa",
-    "tipo_usuario": "comum"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.448007",
-    "email": "carlos.dev@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 4,
-    "inicio_na_empresa": "2023-01-20",
-    "nome": "Carlos Oliveira",
-    "tipo_usuario": "comum"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.569837",
-    "email": "lucia.marketing@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 3,
-    "grupo_nome": "Marketing",
-    "id": 5,
-    "inicio_na_empresa": "2022-09-15",
-    "nome": "Lucia Ferreira",
-    "tipo_usuario": "comum"
-  }
-]
+[36m=== Listar Tipos de Ausência (público) ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 10 itens[0m
+[33m📄 Primeiro item: {
+  "descricao": "Férias",
+  "id": 1,
+  "usa_turno": false
+}...[0m
+[36m🌐 GET http://localhost:5000/api/turnos[0m
 
-=== Listar Eventos (RH) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.586570",
-    "data_aprovacao": null,
-    "data_fim": "2024-02-19",
-    "data_inicio": "2024-02-15",
-    "descricao": "Férias de carnaval",
-    "id": 1,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Férias",
-    "total_dias": 5,
-    "turno": null,
-    "usuario_id": 3,
-    "usuario_nome": "Ana Costa"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.602151",
-    "data_aprovacao": null,
-    "data_fim": "2024-03-01",
-    "data_inicio": "2024-03-01",
-    "descricao": "Consulta médica (Assiduidade)",
-    "id": 2,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Assiduidade",
-    "total_dias": 1,
-    "turno": null,
-    "usuario_id": 4,
-    "usuario_nome": "Carlos Oliveira"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.614992",
-    "data_aprovacao": null,
-    "data_fim": "2024-04-01",
-    "data_inicio": "2024-04-01",
-    "descricao": "Plantão extra",
-    "id": 3,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Plantão",
-    "total_dias": 1,
-    "turno": null,
-    "usuario_id": 3,
-    "usuario_nome": "Ana Costa"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.627552",
-    "data_aprovacao": null,
-    "data_fim": "2024-05-10",
-    "data_inicio": "2024-05-01",
-    "descricao": "Licença maternidade",
-    "id": 4,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Licença Maternidade/Paternidade",
-    "total_dias": 10,
-    "turno": null,
-    "usuario_id": 1,
-    "usuario_nome": "Maria Silva"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.640020",
-    "data_aprovacao": null,
-    "data_fim": "2024-06-15",
-    "data_inicio": "2024-06-15",
-    "descricao": "Evento especial da empresa",
-    "id": 5,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Evento Especial",
-    "total_dias": 1,
-    "turno": null,
-    "usuario_id": 5,
-    "usuario_nome": "Lucia Ferreira"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.652433",
-    "data_aprovacao": null,
-    "data_fim": "2024-07-25",
-    "data_inicio": "2024-07-20",
-    "descricao": "Licença geral",
-    "id": 6,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Licença (Geral)",
-    "total_dias": 6,
-    "turno": null,
-    "usuario_id": 4,
-    "usuario_nome": "Carlos Oliveira"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:49.878609",
-    "data_aprovacao": null,
-    "data_fim": "2024-08-05",
-    "data_inicio": "2024-08-01",
-    "descricao": null,
-    "id": 7,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Férias",
-    "total_dias": 5,
-    "turno": null,
-    "usuario_id": 4,
-    "usuario_nome": "Carlos Oliveira"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:49.909267",
-    "data_aprovacao": null,
-    "data_fim": "2024-07-05",
-    "data_inicio": "2024-07-01",
-    "descricao": null,
-    "id": 8,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Férias",
-    "total_dias": 5,
-    "turno": null,
-    "usuario_id": 5,
-    "usuario_nome": "Lucia Ferreira"
-  }
-]
+[36m=== Listar Turnos (público) ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 5 itens[0m
+[33m📄 Primeiro item: {
+  "descricao": "Manhã",
+  "id": 1
+}...[0m
+[36m🌐 GET http://localhost:5000/api/feriados[0m
 
-=== Criar Usuário (RH) ===
-Status: 201
-✅ SUCESSO
-Response: {
+[36m=== Listar Feriados (público) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "listar_feriados_nacionais() takes 0 positional arguments but 1 was given"
+}[0m
+
+[1m🔒 SEÇÃO 3: ENDPOINTS PROTEGIDOS[0m
+
+[36m👩‍💼 Testando com usuário RH[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios[0m
+
+[36m=== RH - Listar Usuários ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 18 itens[0m
+[33m📄 Primeiro item: {
+  "UF": "SP",
   "ativo": true,
-  "criado_em": "2025-05-29T19:49:06.664948",
-  "email": "teste.jwt@techsolutions.com",
-  "ferias_tiradas": 0,
+  "cpf": 123,
+  "criado_em": "2025-06-05T19:39:55",
+  "email": "cpf...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/grupos[0m
+
+[36m=== RH - Listar Grupos ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 26 itens[0m
+[33m📄 Primeiro item: {
+  "ativo": true,
+  "cnpj_empresa": 12345678000190,
+  "criado_em": "2025-06-04",
+  "descricao": "Eq...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/empresas[0m
+
+[36m=== RH - Listar Empresas ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 1 itens[0m
+[33m📄 Primeiro item: {
+  "ativa": true,
+  "cnpj": 12345678000190,
+  "criado_em": "2025-06-04",
+  "email": "contato@techso...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario[0m
+
+[36m=== RH - Listar Calendário ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 58 itens[0m
+[33m📄 Primeiro item: {
+  "backgroundColor": "#ffc107",
+  "borderColor": "#ffc107",
+  "end": "2025-07-16",
+  "extendedProp...[0m
+
+[36m👨‍💼 Testando com usuário Gestor[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios[0m
+
+[36m=== Gestor - Listar Usuários do Grupo ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 12 itens[0m
+[33m📄 Primeiro item: {
+  "UF": "SP",
+  "ativo": true,
+  "cpf": 16440627430,
+  "criado_em": "2025-06-05T19:39:43",
+  "emai...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/empresas[0m
+
+[36m=== Gestor - Tentar Acessar Empresas (deve falhar) ===[0m
+✅ Status: [32m403[0m
+[33m📄 Response: {
+  "erro": "Apenas RH pode acessar dados de empresas"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario/grupo/3[0m
+
+[36m=== Gestor - Listar Calendário do Grupo ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "eventos": [
+    {
+      "backgroundColor": "#ffc107",
+      "borderColor": "#ffc107",
+      "end": "2025-06-20",
+      "extendedProps": {
+        "cpf_usuario": 34567890123,
+        "criado_em": "2025-06-05T00:30:49",
+        "status": "pendente",
+        "tipo_ausencia": "Desconhecido"
+      }...[0m
+
+[36m👤 Testando com usuário Comum[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/eventos[0m
+
+[36m=== Usuário - Listar Eventos Próprios ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 0 itens[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "99988877766",
+  "nome": "Teste Sem Permissão",
+  "email": "teste.sem.permissao.1750379131379@example.com",
+  "senha": "123456",
+  "grupo_id": 3,
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "SP",
+  "tipo_usuario": "comum",
+  "flag_gestor": "N"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
+
+[36m=== Usuário - Tentar Criar Usuário (deve falhar) ===[0m
+✅ Status: [32m403[0m
+[33m📄 Response: {
+  "erro": "Sem permissão para criar usuários"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario/grupo/1[0m
+
+[36m=== Usuário - Tentar Acessar Calendário de Outro Grupo (deve falhar) ===[0m
+✅ Status: [32m403[0m
+[33m📄 Response: {
+  "erro": "Sem permissão para acessar dados deste grupo"
+}[0m
+
+[1m📝 SEÇÃO 4: OPERAÇÕES CRUD BÁSICAS[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/grupos/2[0m
+[34m🏢 CNPJ da empresa do RH: 12345678000190[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "nome": "Grupo Teste 1750379137440",
+  "cnpj_empresa": 12345678000190,
+  "telefone": "(11) 1234-5678",
+  "descricao": "Grupo criado durante teste automatizado"
+}[0m
+[36m🌐 POST http://localhost:5000/api/grupos[0m
+
+[36m=== Criar Novo Grupo ===[0m
+✅ Status: [32m201[0m
+[33m📄 Response: {
+  "ativo": true,
+  "cnpj_empresa": 12345678000190,
+  "criado_em": "2025-06-19",
+  "descricao": "Grupo criado durante teste automatizado",
+  "empresa_nome": "Tech Solutions LTDA",
+  "id": 48,
+  "nome": "Grupo Teste 1750379137440",
+  "telefone": "(11) 1234-5678",
+  "total_usuarios": 0
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "descricao": "Grupo atualizado durante teste"
+}[0m
+[36m🌐 PUT http://localhost:5000/api/grupos/48[0m
+
+[36m=== Atualizar Grupo Criado ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "status": "Grupo atualizado"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-06-15",
+  "data_fim": "2025-06-19",
+  "id_tipo_ausencia": 2,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Usuário - Criar Novo Evento (Não-Férias) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+
+[1m🛡️ SEÇÃO 5: VALIDAÇÕES DE SEGURANÇA[0m
+[36m🌐 GET http://localhost:5000/api/usuarios[0m
+
+[36m=== Acesso sem token (deve falhar) ===[0m
+✅ Status: [32m401[0m
+[33m📄 Response: {
+  "erro": "Token de acesso necessário"
+}[0m
+[33m🔑 Token usado: token-completamente-...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios[0m
+
+[36m=== Token inválido (deve falhar) ===[0m
+✅ Status: [32m401[0m
+[33m📄 Response: {
+  "erro": "Token inválido"
+}[0m
+[33m🔑 Token usado: Bearer token-malform...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios[0m
+
+[36m=== Token malformado (deve falhar) ===[0m
+✅ Status: [32m401[0m
+[33m📄 Response: {
+  "erro": "Token inválido"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/23456789012[0m
+
+[36m=== Acessar Recurso de Outro Usuário (deve falhar) ===[0m
+✅ Status: [32m403[0m
+[33m📄 Response: {
+  "erro": "Sem permissão para acessar este usuário"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "nome": "Grupo Teste Inválido CNPJ",
+  "cnpj_empresa": "00000000000000",
+  "telefone": "(11) 1234-5678"
+}[0m
+[36m🌐 POST http://localhost:5000/api/grupos[0m
+
+[36m=== Criar Grupo com CNPJ Inválido (verificar se validação está ativa) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "CNPJ inválido"
+}[0m
+
+[1m🗓️ SEÇÃO 7: FLUXO DE APROVAÇÃO DE EVENTOS[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-07-10",
+  "data_fim": "2025-07-15",
+  "id_tipo_ausencia": 2,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Criar Evento (Não-Férias) para Aprovação ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+
+[1m👥 SEÇÃO 8: CRIAÇÃO DE USUÁRIOS[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "50379151453",
+  "nome": "Novo Usuário Comum Teste",
+  "email": "novo.comum.teste.1750379151453@techsolutions.com",
+  "senha": "123456",
+  "grupo_id": 3,
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "SP",
+  "tipo_usuario": "comum",
+  "flag_gestor": "N"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
+
+[36m=== Criar Usuário Comum como RH ===[0m
+✅ Status: [32m201[0m
+[33m📄 Response: {
+  "UF": "SP",
+  "ativo": true,
+  "cpf": 50379151453,
+  "criado_em": "2025-06-19T21:25:55",
+  "email": "novo.comum.teste.1750379151453@techsolutions.com",
+  "flag_gestor": "N",
+  "grupo_id": 3,
+  "grupo_nome": "Desenvolvimento",
+  "inicio_na_empresa": "2023-01-01",
+  "nome": "Novo Usuário Comum Tes...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "50379156481",
+  "nome": "Novo Usuário Gestor Teste",
+  "email": "novo.gestor.teste.1750379156480@techsolutions.com",
+  "senha": "123456",
+  "grupo_id": 3,
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "SP",
+  "tipo_usuario": "comum",
+  "flag_gestor": "S"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
+
+[36m=== Criar Usuário Gestor como RH ===[0m
+✅ Status: [32m201[0m
+[33m📄 Response: {
+  "UF": "SP",
+  "ativo": true,
+  "cpf": 50379156481,
+  "criado_em": "2025-06-19T21:26:00",
+  "email": "novo.gestor.teste.1750379156480@techsolutions.com",
+  "flag_gestor": "S",
+  "grupo_id": 3,
+  "grupo_nome": "Desenvolvimento",
+  "inicio_na_empresa": "2023-01-01",
+  "nome": "Novo Usuário Gestor T...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "50379161475",
+  "nome": "Usuário Grupo Inválido Teste",
+  "email": "grupo.invalido.teste.1750379161473@techsolutions.com",
+  "senha": "123456",
   "grupo_id": 1,
-  "grupo_nome": "Recursos Humanos",
-  "id": 6,
-  "inicio_na_empresa": "2024-01-01",
-  "nome": "Teste JWT",
-  "tipo_usuario": "comum"
-}
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
 
-📋 TESTANDO COM TOKEN GESTOR (Acesso Limitado)
+[36m=== Criar Usuário em Grupo Não Autorizado (Gestor) (deve falhar) ===[0m
+✅ Status: [32m403[0m
+[33m📄 Response: {
+  "erro": "Sem permissão para criar usuários neste grupo"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "123",
+  "nome": "Usuário CPF Inválido Teste",
+  "email": "cpf.invalido.teste.1750379163243@techsolutions.com",
+  "senha": "123456",
+  "grupo_id": 2,
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
 
-=== Endpoint /me (Gestor) ===
-Status: 200
-✅ SUCESSO
-Response: {
-  "usuario": {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.198239",
-    "email": "joao.gestor@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 2,
-    "inicio_na_empresa": "2021-03-10",
-    "nome": "João Santos",
-    "tipo_usuario": "gestor"
-  }
-}
+[36m=== Criar Usuário com CPF Inválido (verificar se validação está ativa) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "CPF inválido"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "50379164425",
+  "nome": "Usuário Email Duplicado Teste",
+  "email": "novo.comum.teste.1750379151453@techsolutions.com",
+  "senha": "123456",
+  "grupo_id": 2,
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
 
-=== Listar Usuários (Gestor) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.198239",
-    "email": "joao.gestor@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 2,
-    "inicio_na_empresa": "2021-03-10",
-    "nome": "João Santos",
-    "tipo_usuario": "gestor"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.319890",
-    "email": "ana.dev@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 3,
-    "inicio_na_empresa": "2022-06-01",
-    "nome": "Ana Costa",
-    "tipo_usuario": "comum"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.448007",
-    "email": "carlos.dev@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 4,
-    "inicio_na_empresa": "2023-01-20",
-    "nome": "Carlos Oliveira",
-    "tipo_usuario": "comum"
-  }
-]
+[36m=== Criar Usuário com Email Duplicado (deve falhar) ===[0m
+❌ Status: [31m400[0m
+[33m📄 Response: {
+  "erro": "Valor inválido: Email já cadastrado"
+}[0m
 
-=== Listar Empresas (Gestor - Deve Falhar) ===
-Status: 403
-❌ ERRO
-Response: {
-  "erro": "Sem permissão para listar empresas"
-}
+[1m🏢 SEÇÃO 9: GERENCIAMENTO DE GRUPOS[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/grupos/2[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "nome": "",
+  "cnpj_empresa": 12345678000190,
+  "telefone": "(11) 1234-5678"
+}[0m
+[36m🌐 POST http://localhost:5000/api/grupos[0m
 
-=== Listar Eventos do Grupo (Gestor) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.586570",
-    "data_aprovacao": null,
-    "data_fim": "2024-02-19",
-    "data_inicio": "2024-02-15",
-    "descricao": "Férias de carnaval",
-    "id": 1,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Férias",
-    "total_dias": 5,
-    "turno": null,
-    "usuario_id": 3,
-    "usuario_nome": "Ana Costa"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.602151",
-    "data_aprovacao": null,
-    "data_fim": "2024-03-01",
-    "data_inicio": "2024-03-01",
-    "descricao": "Consulta médica (Assiduidade)",
-    "id": 2,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Assiduidade",
-    "total_dias": 1,
-    "turno": null,
-    "usuario_id": 4,
-    "usuario_nome": "Carlos Oliveira"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.614992",
-    "data_aprovacao": null,
-    "data_fim": "2024-04-01",
-    "data_inicio": "2024-04-01",
-    "descricao": "Plantão extra",
-    "id": 3,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Plantão",
-    "total_dias": 1,
-    "turno": null,
-    "usuario_id": 3,
-    "usuario_nome": "Ana Costa"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:36.652433",
-    "data_aprovacao": null,
-    "data_fim": "2024-07-25",
-    "data_inicio": "2024-07-20",
-    "descricao": "Licença geral",
-    "id": 6,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Licença (Geral)",
-    "total_dias": 6,
-    "turno": null,
-    "usuario_id": 4,
-    "usuario_nome": "Carlos Oliveira"
-  },
-  {
-    "aprovado_por_id": null,
-    "aprovado_por_nome": null,
-    "criado_em": "2025-05-28T05:38:49.878609",
-    "data_aprovacao": null,
-    "data_fim": "2024-08-05",
-    "data_inicio": "2024-08-01",
-    "descricao": null,
-    "id": 7,
-    "observacoes_aprovacao": null,
-    "status": "pendente",
-    "tipo_ausencia": "Férias",
-    "total_dias": 5,
-    "turno": null,
-    "usuario_id": 4,
-    "usuario_nome": "Carlos Oliveira"
-  }
-]
+[36m=== Criar Grupo com Dados Inválidos (deve falhar) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "Campo obrigatório ausente: nome"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "nome": "Grupo Teste Completo 1750379172319",
+  "cnpj_empresa": 12345678000190,
+  "telefone": "(11) 1234-5678",
+  "descricao": "Grupo para teste completo"
+}[0m
+[36m🌐 POST http://localhost:5000/api/grupos[0m
 
-📋 TESTANDO REFRESH TOKEN
+[36m=== Criar Novo Grupo Válido ===[0m
+✅ Status: [32m201[0m
+[33m📄 Response: {
+  "ativo": true,
+  "cnpj_empresa": 12345678000190,
+  "criado_em": "2025-06-19",
+  "descricao": "Grupo para teste completo",
+  "empresa_nome": "Tech Solutions LTDA",
+  "id": 49,
+  "nome": "Grupo Teste Completo 1750379172319",
+  "telefone": "(11) 1234-5678",
+  "total_usuarios": 0
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "nome": "Grupo Atualizado Teste",
+  "descricao": "Descrição atualizada durante teste"
+}[0m
+[36m🌐 PUT http://localhost:5000/api/grupos/49[0m
 
-=== Refresh Token ===
-Status: 200
-✅ SUCESSO
-Response: { access_token: '***', refresh_token: '***', usuario: {...} }
+[36m=== Atualizar Grupo ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "status": "Grupo atualizado"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "descricao": "Tentativa de atualização por gestor"
+}[0m
+[36m🌐 PUT http://localhost:5000/api/grupos/49[0m
 
-📋 TESTANDO SEM TOKEN (Deve Falhar)
+[36m=== Atualizar Grupo como Gestor (deve falhar) ===[0m
+✅ Status: [32m403[0m
+[33m📄 Response: {
+  "erro": "Sem permissão para acessar dados deste grupo"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 DELETE http://localhost:5000/api/grupos/49[0m
 
-=== Listar Usuários Sem Token ===
-Status: 401
-❌ ERRO
-Response: {
-  "erro": "Token de autenticação necessário"
-}
+[36m=== Desativar Grupo ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "status": "Grupo desativado"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/grupos/49[0m
 
-📋 TESTANDO LOGOUT
+[36m=== Verificar Grupo Desativado (GET) ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "ativo": false,
+  "cnpj_empresa": 12345678000190,
+  "criado_em": "2025-06-19",
+  "descricao": "Descrição atualizada durante teste",
+  "empresa_nome": "Tech Solutions LTDA",
+  "id": 49,
+  "nome": "Grupo Atualizado Teste",
+  "telefone": "(11) 1234-5678",
+  "total_usuarios": 0
+}[0m
+[32m✅ Grupo corretamente marcado como inativo.[0m
 
-=== Logout ===
-Status: 200
-✅ SUCESSO
-Response: {
+[1m🔍 SEÇÃO 10: VALIDAÇÃO DE DADOS[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-07-15",
+  "data_fim": "2025-07-10",
+  "id_tipo_ausencia": 2,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Criar Evento com Data Inválida (deve falhar) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "Data de início não pode ser posterior à data de fim"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-07-10",
+  "data_fim": "2025-07-15",
+  "id_tipo_ausencia": 9999,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Criar Evento com Tipo Inexistente (deve falhar) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "Tipo de ausência inválido"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "50379191342",
+  "nome": "Usuário UF Inválida Teste",
+  "email": "uf.invalida.teste.1750379191338@techsolutions.com",
+  "senha": "123456",
+  "grupo_id": 2,
+  "inicio_na_empresa": "2023-01-01",
+  "uf": "XX"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
+
+[36m=== Criar Usuário com UF Inválida (deve falhar) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "UF inválida"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/grupos/2[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "nome": "Grupo Sem Telefone Teste 1750379196234",
+  "cnpj_empresa": 12345678000190
+}[0m
+[36m🌐 POST http://localhost:5000/api/grupos[0m
+
+[36m=== Criar Grupo Sem Telefone (deve falhar) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "Campo obrigatório ausente: telefone"
+}[0m
+
+[1m📅 SEÇÃO 11: CALENDÁRIO E VISUALIZAÇÕES[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario[0m
+
+[36m=== Calendário Geral (RH) ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 58 itens[0m
+[33m📄 Primeiro item: {
+  "backgroundColor": "#ffc107",
+  "borderColor": "#ffc107",
+  "end": "2025-07-16",
+  "extendedProp...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario?inicio=2025-06-20&fim=2025-09-20[0m
+
+[36m=== Calendário com Filtro de Data ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 11 itens[0m
+[33m📄 Primeiro item: {
+  "backgroundColor": "#ffc107",
+  "borderColor": "#ffc107",
+  "end": "2025-07-16",
+  "extendedProp...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario/grupo/3[0m
+
+[36m=== Calendário de Grupo Específico ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "eventos": [
+    {
+      "backgroundColor": "#ffc107",
+      "borderColor": "#ffc107",
+      "end": "2025-06-20",
+      "extendedProps": {
+        "cpf_usuario": 34567890123,
+        "criado_em": "2025-06-05T00:30:49",
+        "status": "pendente",
+        "tipo_ausencia": "Desconhecido"
+      }...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario?tipo_ausencia=1[0m
+
+[36m=== Calendário com Filtro de Tipo de Ausência ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 58 itens[0m
+[33m📄 Primeiro item: {
+  "backgroundColor": "#ffc107",
+  "borderColor": "#ffc107",
+  "end": "2025-07-16",
+  "extendedProp...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/calendario[0m
+
+[36m=== Calendário para Usuário Comum ===[0m
+✅ Status: [32m200[0m
+[33m📋 Array com 46 itens[0m
+[33m📄 Primeiro item: {
+  "backgroundColor": "#ffc107",
+  "borderColor": "#ffc107",
+  "end": "2025-06-20",
+  "extendedProp...[0m
+
+[1m🏖️ SEÇÃO 12: TESTES DO SISTEMA DE FÉRIAS[0m
+
+[36m📅 12.1 Validações na Criação de Eventos de Férias (Usuário Comum)[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-06-21",
+  "data_fim": "2025-06-25",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Início no Sábado (deve falhar) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-06-23",
+  "data_fim": "2025-06-22",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Fim no Domingo (deve falhar) ===[0m
+✅ Status: [32m400[0m
+[33m📄 Response: {
+  "erro": "Data de início não pode ser posterior à data de fim"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-12-25",
+  "data_fim": "2025-12-27",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Início em Feriado (2025-12-25) (deve falhar) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2025-12-22",
+  "data_fim": "2025-12-25",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Fim em Feriado (2025-12-25) (deve falhar) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2026-01-05",
+  "data_fim": "2026-02-13",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Agendar mais de 30 dias de uma vez (deve falhar) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/34567890123/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Férias - Saldo Inicial Usuário Comum ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2026-03-02",
+  "data_fim": "2026-03-11",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Agendar 10 dias (válido) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/34567890123/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2026-04-06",
+  "data_fim": "2026-04-30",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Agendar mais 25 dias (deve falhar se 10 aprovados e saldo < 25) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+
+[36m🧑‍💼 12.2 Endpoint de Saldo de Férias (/usuarios/{cpf}/vacation-allowance)[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/34567890123/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Saldo Férias - RH para Usuário Comum ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/34567890123/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Saldo Férias - Gestor para Membro do Grupo ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/12345678901/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Saldo Férias - Gestor para Fora do Grupo (deve falhar) ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/34567890123/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Saldo Férias - Usuário Comum para Próprio Saldo ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/12345678901/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Saldo Férias - Usuário Comum para Outro (deve falhar) ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/00000000000/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Saldo Férias - Usuário Inexistente (deve falhar) ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+
+[36m👶 12.3 Validação de Tempo Mínimo de Empresa[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf": "50379357013",
+  "nome": "Empregado Recente Teste Férias",
+  "email": "novo.ferias.50379357013@test.com",
+  "senha": "123456",
+  "grupo_id": 3,
+  "inicio_na_empresa": "2025-06-20",
+  "uf": "SP",
+  "tipo_usuario": "comum",
+  "flag_gestor": "N"
+}[0m
+[36m🌐 POST http://localhost:5000/api/usuarios[0m
+
+[36m=== Férias - Criar Novo Empregado (início hoje) ===[0m
+✅ Status: [32m201[0m
+[33m📄 Response: {
+  "UF": "SP",
+  "ativo": true,
+  "cpf": 50379357013,
+  "criado_em": "2025-06-19T21:29:20",
+  "email": "novo.ferias.50379357013@test.com",
+  "flag_gestor": "N",
+  "grupo_id": 3,
+  "grupo_nome": "Desenvolvimento",
+  "inicio_na_empresa": "2025-06-20",
+  "nome": "Empregado Recente Teste Férias",
+  "ti...[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 50379357013,
+  "data_inicio": "2026-01-05",
+  "data_fim": "2026-01-09",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Novo Empregado (<1 ano) tenta agendar (deve falhar) ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+
+[36m👍 12.4 Validação na Aprovação de Eventos de Férias (Gestor)[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/usuarios/34567890123/vacation-allowance[0m
+[31m❌ Erro na requisição: Unexpected token < in JSON at position 0[0m
+
+[36m=== Férias - Saldo do Usuário Comum antes dos testes de aprovação em lote ===[0m
+❌ Status: [31mERROR[0m
+[33m📄 Response: {
+  "erro": "Unexpected token < in JSON at position 0"
+}[0m
+[34mℹ️ Saldo atual do usuário comum para testes de aprovação: 0 dias.[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2026-07-06",
+  "data_fim": "2026-07-25",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Setup: Agendar 20 dias para aprovação ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[34m📤 Dados enviados: {
+  "cpf_usuario": 34567890123,
+  "data_inicio": "2026-08-03",
+  "data_fim": "2026-08-17",
+  "id_tipo_ausencia": 1,
+  "uf": "SP"
+}[0m
+[36m🌐 POST http://localhost:5000/api/eventos[0m
+
+[36m=== Férias - Setup: Agendar mais 15 dias para aprovação ===[0m
+❌ Status: [31m500[0m
+[33m📄 Response: {
+  "erro": "criar_evento() missing 1 required positional argument: 'session'"
+}[0m
+
+[1m🧹 LIMPEZA DE DADOS DE TESTE[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 DELETE http://localhost:5000/api/usuarios/50379151453[0m
+
+[36m=== Deletar Usuário CPF 50379151453 ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "status": "Usuário desativado"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 DELETE http://localhost:5000/api/usuarios/50379156481[0m
+
+[36m=== Deletar Usuário CPF 50379156481 ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "status": "Usuário desativado"
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 DELETE http://localhost:5000/api/usuarios/50379357013[0m
+
+[36m=== Deletar Usuário CPF 50379357013 ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
+  "status": "Usuário desativado"
+}[0m
+[32m✅ 2 grupos foram marcados para limpeza (desativados em seus testes).[0m
+
+[1m🚪 SEÇÃO 6: LOGOUT[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 POST http://localhost:5000/api/auth/logout[0m
+
+[36m=== Logout RH ===[0m
+✅ Status: [32m200[0m
+[33m📄 Response: {
   "message": "Logout realizado com sucesso"
-}
+}[0m
+[33m🔑 Token usado: eyJhbGciOiJIUzI1NiIs...[0m
+[36m🌐 GET http://localhost:5000/api/auth/me[0m
 
-=== Usar Token Após Logout (Deve Falhar) ===
-Status: 200
-✅ SUCESSO
-Response: [
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.073185",
-    "email": "maria.rh@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 1,
-    "grupo_nome": "Recursos Humanos",
-    "id": 1,
-    "inicio_na_empresa": "2020-01-15",
-    "nome": "Maria Silva",
-    "tipo_usuario": "rh"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.198239",
-    "email": "joao.gestor@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 2,
-    "inicio_na_empresa": "2021-03-10",
-    "nome": "João Santos",
-    "tipo_usuario": "gestor"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.319890",
-    "email": "ana.dev@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 3,
-    "inicio_na_empresa": "2022-06-01",
-    "nome": "Ana Costa",
-    "tipo_usuario": "comum"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.448007",
-    "email": "carlos.dev@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 2,
-    "grupo_nome": "Desenvolvimento",
-    "id": 4,
-    "inicio_na_empresa": "2023-01-20",
-    "nome": "Carlos Oliveira",
-    "tipo_usuario": "comum"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-28T05:38:36.569837",
-    "email": "lucia.marketing@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 3,
-    "grupo_nome": "Marketing",
-    "id": 5,
-    "inicio_na_empresa": "2022-09-15",
-    "nome": "Lucia Ferreira",
-    "tipo_usuario": "comum"
-  },
-  {
-    "ativo": true,
-    "criado_em": "2025-05-29T19:49:06.664948",
-    "email": "teste.jwt@techsolutions.com",
-    "ferias_tiradas": 0,
-    "grupo_id": 1,
-    "grupo_nome": "Recursos Humanos",
-    "id": 6,
-    "inicio_na_empresa": "2024-01-01",
-    "nome": "Teste JWT",
-    "tipo_usuario": "comum"
-  }
-]
+[36m=== Usar token após logout (deve falhar) ===[0m
+✅ Status: [32m401[0m
+[33m📄 Response: {
+  "erro": "Token invalidado"
+}[0m
 
-📊 RESUMO DOS TESTES JWT
-✅ Login com JWT funcionando
-✅ Tokens sendo gerados corretamente
-✅ Endpoints protegidos funcionando
-✅ Permissões por nível funcionando
-✅ Refresh token funcionando
-✅ Logout funcionando
+[1m📊 RELATÓRIO FINAL[0m
+============================================================
+[1mTotal de Testes:[0m 73
+[32mTestes Passaram:[0m 52
+[31mTestes Falharam:[0m 21
+[1mTaxa de Sucesso:[0m [33m71.2%[0m
 
-🎉 Sistema JWT completamente funcional!
+[1m🔑 TOKENS OBTIDOS:[0m
+[32m✅ RH: OK[0m
+[32m✅ GESTOR: OK[0m
+[32m✅ COMUM: OK[0m
+
+[1m📈 ESTATÍSTICAS DE ENTIDADES CRIADAS/DELETADAS (TENTATIVAS):[0m
+[34m🗓️ Eventos: 0[0m
+[34m👤 Usuários: 0[0m
+[34m🏢 Grupos: 0[0m
+
+[1m💡 DIAGNÓSTICO:[0m
+[33m⚠️ API funcionando com alguns problemas.[0m
+
+[1m🔧 COMANDOS ÚTEIS:[0m
+[36m- Recriar dados: python scripts/seed_data_complete.py[0m
+[36m- Verificar integridade: python scripts/validate_integrity.py[0m
+[36m- Verificar ambiente: python scripts/check_environment.py[0m
